@@ -29,6 +29,8 @@ import com.parse.SaveCallback;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 
 public class UploadActivity extends Activity {
@@ -98,6 +100,20 @@ public class UploadActivity extends Activity {
 
             uploadButton.setOnClickListener(MusicUploadClick);
 
+
+
+            Button playlistButton = (Button) rootView.findViewById(R.id.playlistButton);
+
+            playlistButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    Intent intent = new Intent(getActivity(),PlaylistActivity.class);
+
+                    startActivity(intent);
+                }
+            });
+
             return rootView;
         }
 
@@ -133,7 +149,7 @@ public class UploadActivity extends Activity {
                                 // Get the file path from the URI
                                 final String path = FileUtils.getPath(getActivity(), uri);
                                 Toast.makeText(getActivity(),
-                                        "File Selected: " + path, Toast.LENGTH_LONG).show();
+                                        "File Selected: " + path, Toast.LENGTH_SHORT).show();
 
                                 new ProccessFile().execute(path);
 
@@ -147,7 +163,7 @@ public class UploadActivity extends Activity {
             super.onActivityResult(requestCode, resultCode, data);
         }
 
-        private static class ProccessFile extends AsyncTask<String,Void,byte[]>
+        private class ProccessFile extends AsyncTask<String,Void,byte[]>
         {
             @Override
             protected byte[] doInBackground(String... params) {
@@ -159,34 +175,21 @@ public class UploadActivity extends Activity {
                     return null;
                 }
 
-                FileInputStream fileInputStream;
-
-                File file = new File(uri);
-
-                byte[] bFile = new byte[(int) file.length()];
+                return getFileBytesArray(new File(uri));
+            }
+            private byte[] getFileBytesArray(File file)
+            {
+                byte[] fileBytes = null;
 
                 try {
-                    //convert file into array of bytes
-                    fileInputStream = new FileInputStream(file);
-                    fileInputStream.read(bFile);
-                    fileInputStream.close();
-
-                    for (int i = 0; i < bFile.length; i++) {
-                        System.out.print((char)bFile[i]);
-                    }
-
-
-
-                    return bFile;
-
-
-                }catch(Exception e){
+                    RandomAccessFile f = new RandomAccessFile(file.getAbsolutePath(), "r");
+                    fileBytes = new byte[(int) f.length()];
+                    f.read(fileBytes);
+                }catch (IOException e)
+                {
                     e.printStackTrace();
-
                 }
-
-
-                return null;
+                return fileBytes;
             }
 
             @Override
@@ -219,6 +222,10 @@ public class UploadActivity extends Activity {
                                        playlist.add("playlistUris",file.getUrl());
 
                                       playlist.saveInBackground();
+
+                                        Toast.makeText(MusicUploadFragment.this.getActivity(),
+                                                "File uploaded",Toast.LENGTH_SHORT).show();
+
                                     }
                                 }
                             });

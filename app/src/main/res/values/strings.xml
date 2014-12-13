@@ -6,5 +6,7 @@
     <string name="action_settings">Settings</string>
     <string name="upload_music">Upload File</string>
     <string name="upload_info">Upload songs to playlist by clicking the upload button below. The default user.</string>
+    <string name="playlist_button">See Playlist</string>
+    <string name="title_activity_playlist">PlaylistActivity</string>
 
 </resources>
