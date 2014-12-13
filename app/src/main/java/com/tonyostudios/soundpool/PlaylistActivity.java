@@ -1,7 +1,10 @@
 package com.tonyostudios.soundpool;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,14 +20,19 @@ import com.parse.ParseQuery;
 import com.tonyostudios.ambience.Ambience;
 import com.tonyostudios.ambience.AmbientTrack;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import wseemann.media.FFmpegMediaMetadataRetriever;
 
 
 public class PlaylistActivity extends Activity implements Ambience.AmbientListener {
 
     private ListView playlistListView;
     private TextView titleTextView;
+    private static Context mContext;
 
     private final static String PLAYLIST_ID = "WMi3fNDwsm";
 
@@ -41,12 +49,13 @@ public class PlaylistActivity extends Activity implements Ambience.AmbientListen
         playlistListView = (ListView) findViewById(R.id.playlist_listView);
         titleTextView = (TextView) findViewById(R.id.playlist_name);
 
-        mAdapter = new PlaylistAdapter(this,android.R.layout.simple_list_item_1,new ArrayList<String>());
-        playlistListView.setAdapter(mAdapter);
+
 
         playlistListView.setOnItemClickListener(mListClick);
 
         setUpPlaylist();
+
+        mContext = this;
 
         Ambience.turnOn(this);
 
@@ -96,10 +105,8 @@ public class PlaylistActivity extends Activity implements Ambience.AmbientListen
 
                     List<String> playlistUris = parseObject.getList("playlistUris");
 
-                    mAdapter.addAll(playlistUris);
+                    new ProcessAmbientTracks().execute(playlistUris);
 
-                    Ambience.activeInstance()
-                            .setPlaylistTo(getPlaylist());
 
 
                 }
@@ -109,26 +116,99 @@ public class PlaylistActivity extends Activity implements Ambience.AmbientListen
 
     }
 
-    private ArrayList<AmbientTrack> getPlaylist() {
+    private void getPlaylist() {
 
-        ArrayList<AmbientTrack> playlist = new ArrayList<AmbientTrack>();
+        new ProcessAmbientTracks().execute();
 
-        for(int x = 0; x < mAdapter.getCount(); x++)
-        {
-            AmbientTrack track = AmbientTrack.newInstance();
+    }
+
+    private class ProcessAmbientTracks extends AsyncTask<List<String>,Void,ArrayList<AmbientTrack>>
+    {
+        @Override
+        protected ArrayList<AmbientTrack> doInBackground(List<String>... params) {
+
+            List<String> uris = params[0];
+
+            ArrayList<AmbientTrack> playlist = new ArrayList<AmbientTrack>();
+
+            for(int x = 0; x < uris.size(); x++)
+            {
+                AmbientTrack track = AmbientTrack.newInstance();
 
 
-            Uri uri = Uri.parse(mAdapter.getItem(x));
+                Uri uri = Uri.parse(uris.get(x));
 
-            track.setAudioDownloadUri(uri);
-            track.setAudioUri(uri);
+                track.setAudioDownloadUri(uri);
+                track.setAudioUri(uri);
 
-            playlist.add(track);
+                FFmpegMediaMetadataRetriever ffmr = new FFmpegMediaMetadataRetriever();
+                ffmr.setDataSource(uris.get(x));// .setDataSource(mContext,uri);
 
+                String album = ffmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_ALBUM);
+
+               String artist = ffmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_ARTIST);
+               String date = ffmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DATE);
+               String genre =  ffmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_GENRE);
+               String title = ffmr.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_TITLE);
+
+                try
+                {
+
+                   File cache = mContext.getCacheDir();
+
+                    File albumFile = new File(cache.getAbsolutePath() + File.separatorChar + uri.getLastPathSegment());
+
+                    Bitmap b = ffmr.getFrameAtTime(2000000, FFmpegMediaMetadataRetriever.OPTION_CLOSEST); // frame at 2 seconds
+                    byte [] artwork = ffmr.getEmbeddedPicture();
+
+                    FileOutputStream stream = new FileOutputStream(albumFile);
+                    try {
+                        stream.write(artwork);
+                    } finally {
+                        stream.close();
+                    }
+
+
+                    track.setAlbumImageUri(Uri.parse(albumFile.getAbsolutePath()));
+
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+
+
+                ffmr.release();
+
+                ArrayList<String> genres = new ArrayList<String>();
+
+                genres.add(genre);
+
+                track.setName(title)
+                        .setArtistName(artist)
+                        .setReleaseDate(date)
+                        .setAlbumName(album)
+                        .setGenres(genres);
+
+
+                playlist.add(track);
+            }
+
+            return playlist;
         }
 
-        return playlist;
+        @Override
+        protected void onPostExecute(ArrayList<AmbientTrack> tracks) {
+            super.onPostExecute(tracks);
 
+
+            mAdapter = new PlaylistAdapter(mContext,R.layout.track,tracks);
+            playlistListView.setAdapter(mAdapter);
+
+            Ambience.activeInstance()
+                    .setPlaylistTo(tracks);
+
+        }
     }
 
 
