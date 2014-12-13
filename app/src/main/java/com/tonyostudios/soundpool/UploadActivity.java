@@ -3,6 +3,8 @@ package com.tonyostudios.soundpool;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,8 +14,14 @@ import android.view.ViewGroup;
 import android.os.Build;
 import android.widget.Button;
 
+import com.ipaulpro.afilechooser.utils.FileUtils;
+
+import java.io.File;
+
 
 public class UploadActivity extends Activity {
+
+    private static final int REQUEST_CHOOSER = 1234;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,11 +82,36 @@ public class UploadActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                
+              Intent getContentIntent =  FileUtils.createGetContentIntent();
+
+              Intent intent = Intent.createChooser(getContentIntent, "Select a file");
+                startActivityForResult(intent, REQUEST_CHOOSER);
 
             }
         };
 
 
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CHOOSER:
+                if (resultCode == RESULT_OK) {
+
+                    final Uri uri = data.getData();
+
+                    // Get the File path from the Uri
+                    String path = FileUtils.getPath(this, uri);
+
+                    // Alternatively, use FileUtils.getFile(Context, Uri)
+                    if (path != null && FileUtils.isLocal(path)) {
+                        File file = new File(path);
+                    }
+                }
+                break;
+        }
+    }
+
 }
