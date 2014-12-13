@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.Button;
 
 
 public class UploadActivity extends Activity {
@@ -20,7 +21,7 @@ public class UploadActivity extends Activity {
         setContentView(R.layout.activity_upload);
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new MusicUploadFragment())
                     .commit();
         }
     }
@@ -51,16 +52,33 @@ public class UploadActivity extends Activity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class MusicUploadFragment extends Fragment {
 
-        public PlaceholderFragment() {
+        public MusicUploadFragment() {
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_upload, container, false);
+
+            Button uploadButton = (Button) rootView.findViewById(R.id.uploadButton);
+
+            uploadButton.setOnClickListener(MusicUploadClick);
+
             return rootView;
         }
+
+
+        private View.OnClickListener MusicUploadClick = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                
+
+            }
+        };
+
+
     }
 }
