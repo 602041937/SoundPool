@@ -1,10 +1,12 @@
 package com.tonyostudios.soundpoolmaterial.playlist;
 
+import com.tonyostudios.soundpoolmaterial.models.Playlist;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by tonyofrancis on 12/21/14.
+ * Created by tonyostudios on 12/21/14.
  */
 public class PlaylistController {
 
@@ -18,7 +20,13 @@ public class PlaylistController {
      * Holds all the callback methods used to pass data to different parts of the
      * application to update playlistViews;
      */
-    private List<RefresherListener> mCallbacks = new ArrayList<RefresherListener>();
+    private ArrayList<RefresherListener> mCallbacks = new ArrayList<RefresherListener>();
+
+
+    /**
+     * Holds a list of playlist items associated with the user
+     */
+    private List<Playlist> mPlaylist = new ArrayList<Playlist>();
 
 
     /**
@@ -81,7 +89,7 @@ public class PlaylistController {
             {
                 RefresherListener listener = mCallbacks.get(x);
 
-                listener.refreshedPlaylistData();
+                listener.refreshedPlaylistData(mPlaylist); // update each callback
             }
         }
 
@@ -106,6 +114,12 @@ public class PlaylistController {
             mPlaylistController = null;
         }
 
+        if(mPlaylist != null)
+        {
+            mPlaylist.clear();
+            mPlaylist = null;
+        }
+
     }
 
 
@@ -120,6 +134,6 @@ public class PlaylistController {
          * Method called to pass refresh playlist data
          * to application
          */
-        public abstract void refreshedPlaylistData();
+        public abstract void refreshedPlaylistData(List<Playlist> playlist);
     }
 }
