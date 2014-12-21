@@ -67,6 +67,19 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
         return rootView;
     }
 
+    private void swapPlaylist(List<Playlist> playlist)
+    {
+        if(playlist == null)
+        {
+            throw new NullPointerException("cannot swap current playlist with null");
+        }
+
+        mPlaylist.clear();
+        mPlaylist = null;
+        mPlaylist = playlist;
+        notifyDataSetChanged();
+    }
+
 
     public static class ViewHolder
     {
