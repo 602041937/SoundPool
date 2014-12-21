@@ -1,2 +1,2 @@
-include ':app', ':ambience'
+include ':app', ':ambience', ':soundpoolmaterial'
 include ':aFileChooser'

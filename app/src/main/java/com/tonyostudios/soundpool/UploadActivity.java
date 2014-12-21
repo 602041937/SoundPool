@@ -36,6 +36,7 @@ import java.io.RandomAccessFile;
 public class UploadActivity extends Activity {
 
     private static final String TAG = "UploadActivity";
+    private final static String PLAYLIST_ID = "WMi3fNDwsm";
 
     private static final int REQUEST_CODE = 6384; // onActivityResult request
     // code
@@ -111,6 +112,8 @@ public class UploadActivity extends Activity {
                     Intent intent = new Intent(getActivity(),PlaylistActivity.class);
 
                     startActivity(intent);
+
+
                 }
             });
 
@@ -122,15 +125,35 @@ public class UploadActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                Intent target = FileUtils.createGetContentIntent();
-                // Create the chooser Intent
-                Intent intent = Intent.createChooser(
-                        target, "Select A File");
-                try {
-                   startActivityForResult(intent, REQUEST_CODE);
-                } catch (ActivityNotFoundException e) {
-                    // The reason for the existence of aFileChooser
-                }
+
+
+
+                ParseQuery<ParseObject> query = ParseQuery.getQuery("pool");
+
+                query.getInBackground(PLAYLIST_ID,new GetCallback<ParseObject>() {
+                    @Override
+                    public void done(ParseObject parseObject, ParseException e) {
+
+                        if (e == null) {
+                            int size = parseObject.getInt("playlistSize");
+
+                            if (size < 5) {
+                                Intent target = FileUtils.createGetContentIntent();
+                                // Create the chooser Intent
+                                Intent intent = Intent.createChooser(
+                                        target, "Select A File");
+                                try {
+                                    startActivityForResult(intent, REQUEST_CODE);
+                                } catch (ActivityNotFoundException err) {
+                                    // The reason for the existence of aFileChooser
+                                }
+
+                                startActivity(intent);
+                            } else {
+                                Toast.makeText(getActivity(), "Reached playlist limit", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }});
 
             }
         };
