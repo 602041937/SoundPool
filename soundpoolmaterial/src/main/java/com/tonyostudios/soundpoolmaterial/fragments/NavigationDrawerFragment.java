@@ -1,4 +1,4 @@
-package com.tonyostudios.soundpoolmaterial;
+package com.tonyostudios.soundpoolmaterial.fragments;
 
 
 import android.app.Activity;
@@ -21,6 +21,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.tonyostudios.soundpoolmaterial.R;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -53,12 +55,15 @@ public class NavigationDrawerFragment extends Fragment {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
     private View mFragmentContainerView;
+    private View mDrawView;
 
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
     public NavigationDrawerFragment() {
+
+
     }
 
     @Override
@@ -89,8 +94,15 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mDrawerListView = (ListView) inflater.inflate(
-                R.layout.fragment_navigation_drawer, container, false);
+
+
+        mDrawView = inflater.inflate(R.layout.fragment_navigation_drawer,container, false);
+
+
+        mDrawerListView = (ListView) mDrawView.findViewById(R.id.nav_list);
+
+
+
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -107,7 +119,8 @@ public class NavigationDrawerFragment extends Fragment {
                         getString(R.string.title_section3),
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-        return mDrawerListView;
+
+        return mDrawView;
     }
 
     public boolean isDrawerOpen() {

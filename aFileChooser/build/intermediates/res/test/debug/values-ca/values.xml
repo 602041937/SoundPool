@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/Users/tonyofrancis/AndroidStudioProjects/SoundPool/aFileChooser/build/intermediates/bundles/debug/res/values-ca/values.xml -->
+    <!-- From: file:/Users/tonyofrancis/Documents/Git/SoundPool/aFileChooser/build/intermediates/bundles/debug/res/values-ca/values.xml -->
     <eat-comment/>
     <string name="choose_file">Seleccioneu un fitxer</string>
     <string name="empty_directory">Carpeta buida</string>

@@ -86,4 +86,4 @@
 	<!-- Android specific -->
 	<type extension=".apk" mimetype="application/vnd.android.package-archive" />
 	
-</MimeTypes><!-- From: file:/Users/tonyofrancis/AndroidStudioProjects/SoundPool/aFileChooser/src/main/res/xml/mimetypes.xml -->
+</MimeTypes><!-- From: file:/Users/tonyofrancis/Documents/Git/SoundPool/aFileChooser/src/main/res/xml/mimetypes.xml -->

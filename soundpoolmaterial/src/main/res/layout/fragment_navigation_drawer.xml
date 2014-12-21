@@ -6,17 +6,19 @@
 
 
 
-
-    <!-- This listView holds all the playLists a user is subscribed to -->
     <ListView
-        android:id="@id/nav_playlist"
+        android:id="@id/nav_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:choiceMode="singleChoice"
         android:divider="@android:color/transparent"
         android:dividerHeight="0dp"
-        android:background="@color/primary_dark"
-        tools:context=".NavigationDrawerFragment" />
+        android:background="#cccc" />
+
+    <!-- This listView holds all the playLists a user is subscribed to -->
+
+
+    <include layout="@layout/playlist_listview" />
 
 </LinearLayout>
 
