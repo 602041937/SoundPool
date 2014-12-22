@@ -1,5 +1,7 @@
 package com.tonyostudios.soundpoolmaterial.playlist;
 
+import android.os.Handler;
+
 import com.tonyostudios.soundpoolmaterial.models.Playlist;
 
 import java.util.ArrayList;
@@ -39,6 +41,18 @@ public class PlaylistController {
 
 
     /**
+     * Handler used to check for playlist updates
+     */
+    private Handler mHandler = new Handler();
+
+
+    /**
+     * Static variable that holds ten mins in millisecond.
+     * This variable is used to update the playlist ever ten mins.
+     */
+    private static final int TEN_MINS = 600000;
+
+    /**
      * Method returns single instance of the playlist controller;
      * @return instance of the playlist controller
      */
@@ -53,7 +67,11 @@ public class PlaylistController {
         return mPlaylistController;
     }
 
-
+    /**
+     * Method used to add a refresherListener. Listener
+     * will be alerted when the playlist data is refreshed
+     * @param callback A refresherListener callback
+     */
     public void addCallbackListener(RefresherListener callback)
     {
         if(callback == null)
@@ -66,6 +84,10 @@ public class PlaylistController {
 
     }
 
+    /**
+     * Method used to remove a refresherListener callback
+     * @param callback A refresherListener callback
+     */
     public void removeCallbackListener(RefresherListener callback)
     {
         if(callback == null)
@@ -97,6 +119,19 @@ public class PlaylistController {
 
 
     /**
+     * Runnable used to check for playlist updates
+     */
+    private Runnable mCountDownRunnable = new Runnable() {
+        @Override
+        public void run() {
+
+            //TODO FETCH UPDATES HERE.
+
+        }
+    };
+
+
+    /**
      * Method used to clear all resources used by the PlaylistController
      */
     public void release()
@@ -118,6 +153,17 @@ public class PlaylistController {
         {
             mPlaylist.clear();
             mPlaylist = null;
+        }
+
+        if(mHandler != null)
+        {
+            mHandler.removeCallbacks(mCountDownRunnable);
+            mHandler = null;
+        }
+
+        if(mCountDownRunnable != null)
+        {
+            mCountDownRunnable = null;
         }
 
     }
